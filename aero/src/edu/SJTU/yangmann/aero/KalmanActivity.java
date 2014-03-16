@@ -6,14 +6,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import jama.Matrix;
+import jkalman.JKalman;
 
-public class MyActivity extends Activity implements SensorEventListener {
+public class KalmanActivity extends Activity implements SensorEventListener {
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer = null;
@@ -51,6 +52,8 @@ public class MyActivity extends Activity implements SensorEventListener {
     private TextView TextViewFV = null;    //文本框
     private TextView TextViewFA = null;    //文本框
 
+    private TextView TextViewKS = null;
+
     private float dT, dT2;
     private int counter = 0, accounter = 0, decounter = 0, accnumber = 0;
     private static final float hz = (float) 2.0, pi = (float) 3.14159265, average = (float) 0.9, threshacc = (float) 1.3;
@@ -60,6 +63,11 @@ public class MyActivity extends Activity implements SensorEventListener {
     private float[] sinc;
     private boolean startjudge = false;
     private float[] worldxfiltered, worldyfiltered, worldxraw, worldyraw, worldzraw, worldzfiltered;
+
+    private JKalman kalman;
+    private Matrix state;
+    private Matrix state_corrected;
+    private Matrix measurement;
 
     /**
      * Called when the activity is first created.
@@ -91,7 +99,27 @@ public class MyActivity extends Activity implements SensorEventListener {
         threshwindow = window * average;
 
 
-        //// TODO 以上来自以前
+        // TODO 以上来自以前
+
+        try {
+            kalman = new JKalman(6, 3);
+
+            state = new Matrix(6, 1); // state [x, y, z, dx, dy, dz]
+            state_corrected = new Matrix(6, 1);
+            measurement = new Matrix(3, 1); // measurement [dx, dy, dz]
+            double[][] tr = {
+                    {1, 0, 0, 1, 0, 0},
+                    {0, 1, 0, 0, 1, 0},
+                    {0, 0, 1, 0, 0, 1},
+                    {0, 0, 0, 1, 0, 0},
+                    {0, 0, 0, 0, 1, 0},
+                    {0, 0, 0, 0, 0, 1}
+            };
+            kalman.setTransition_matrix(new Matrix(tr));
+            kalman.setError_cov_post(kalman.getError_cov_post().identity());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         Button bt1 = null;
 
@@ -104,6 +132,8 @@ public class MyActivity extends Activity implements SensorEventListener {
         TextViewFX = (TextView) findViewById(R.id.textViewFx);    //文本框
         TextViewFV = (TextView) findViewById(R.id.textViewFv);    //文本框
         TextViewFA = (TextView) findViewById(R.id.textViewFa);    //文本框
+
+        TextViewKS = (TextView) findViewById(R.id.textViewKalmanState);
 
         bt1 = (Button) findViewById(R.id.button1);                            //按钮
         bt1.setOnClickListener(listener = new View.OnClickListener() {                //设置监听器
@@ -168,15 +198,21 @@ public class MyActivity extends Activity implements SensorEventListener {
             mAccelLast = mAccelCurrent;
             mAccelCurrent = FloatMath.sqrt(mGravity[0] * mGravity[0] + mGravity[1] * mGravity[1] + mGravity[2] * mGravity[2]);
             mAccel = mAccel * 0.9f + mAccelCurrent - mAccelLast;
-            /*Log.v("mAccel", "[Gx]" + mGravity[0] + "\t[Gy]" + mGravity[1] + "\t[Gz]" +
-                    mGravity[2] + "\tThread Time[ms]");*/
 
             // Tried the elapsedRealtimeNanos() but didn't work. Moved it to the button callback.
+
+            measurement.set(0, 0, event.values[0]);
+            measurement.set(1, 0, event.values[1]);
+            measurement.set(2, 0, event.values[2]);
+
             if (mAccel > 3) {
                 Log.wtf("mAccel", "SHAKE!!!!");
             }
 
-            //Log.e("COUNT", " " + counter + "STAMP " + timestamp);
+            state = kalman.Predict();
+            state_corrected = kalman.Correct(measurement);
+
+            Log.e("COUNT!!!!", " " + counter + "STAMP " + timestamp);
             // 积分的部分 NS2S
             if (timestamp != 0) {
                 dT = (event.timestamp - timestamp) * NS2S;  //////////////////////////////
@@ -196,7 +232,6 @@ public class MyActivity extends Activity implements SensorEventListener {
 
                 // 来自以前
                 // 滤波方法大致如下： 先和以前的加速度取平均 然后再滤波
-
 
                 AccelerVector[0] = vaccx = (vaccx + event.values[0]) / 2;
                 AccelerVector[1] = vaccy = (vaccy + event.values[1]) / 2;
@@ -246,11 +281,14 @@ public class MyActivity extends Activity implements SensorEventListener {
                     TextViewFX.setText("------Filtered Data------\nLoc X: " + Floc[0] + "\nY: " + Floc[1] + "\nZ: " + Floc[2]);
                     dT2 = 0;
 
+                    Log.v("TTEXT", "WHAT");
+                    TextViewKS.setText("WHAT");
+
                 } else if (counter >= 2) {
                     counter = 0;
                 } else {
                     counter++;
-                    //Log.e("COUNT000",""+counter);
+                    Log.e("COUNT000",""+counter);
                 }
             }
             timestamp = event.timestamp;

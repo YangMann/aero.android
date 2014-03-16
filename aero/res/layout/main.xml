@@ -8,7 +8,43 @@
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World, MyActivity"
+            android:text="Press Calibrate and be still for 30s."
             />
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calibrate"
+            android:id="@+id/button1" android:layout_gravity="center"/>
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="80dp"
+            android:text="Localizing Result"
+            android:id="@+id/textViewx" android:layout_gravity="center"/>
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:text="Velovity"
+            android:id="@+id/textViewv"/>
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="60dp"
+              android:text="Acceleration"
+              android:id="@+id/textViewa"/>
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="80dp"
+              android:text="Location_Filtered"
+              android:id="@+id/textViewFx"/>
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="60dp"
+              android:text="Velocity_Filtered"
+              android:id="@+id/textViewFv"/>
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="60dp"
+              android:text="Acceleration_Filtered"
+              android:id="@+id/textViewFa"/>
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:text="State_Kalman_Filtered"
+            android:id="@+id/textViewKalmanState"/>
 </LinearLayout>
 
