@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
+              android:layout_height="match_parent"
         >
-
+<LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:baselineAligned="false"
+        >
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -17,34 +22,34 @@
             android:id="@+id/button1" android:layout_gravity="center"/>
     <TextView
             android:layout_width="fill_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:text="Localizing Result"
             android:id="@+id/textViewx" android:layout_gravity="center"/>
     <TextView
             android:layout_width="fill_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:text="Velovity"
             android:id="@+id/textViewv"/>
     <TextView android:layout_width="fill_parent"
-              android:layout_height="60dp"
+              android:layout_height="wrap_content"
               android:text="Acceleration"
               android:id="@+id/textViewa"/>
     <TextView android:layout_width="fill_parent"
-              android:layout_height="80dp"
+              android:layout_height="wrap_content"
               android:text="Location_Filtered"
               android:id="@+id/textViewFx"/>
     <TextView android:layout_width="fill_parent"
-              android:layout_height="60dp"
+              android:layout_height="wrap_content"
               android:text="Velocity_Filtered"
               android:id="@+id/textViewFv"/>
     <TextView android:layout_width="fill_parent"
-              android:layout_height="60dp"
+              android:layout_height="wrap_content"
               android:text="Acceleration_Filtered"
               android:id="@+id/textViewFa"/>
     <TextView
             android:layout_width="fill_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:text="State_Kalman_Filtered"
-            android:id="@+id/textViewKalmanState"/>
-</LinearLayout>
+            android:id="@+id/textViewKalmanState"/></LinearLayout>
+</ScrollView>
 

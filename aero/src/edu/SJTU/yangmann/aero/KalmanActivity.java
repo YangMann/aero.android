@@ -111,9 +111,9 @@ public class KalmanActivity extends Activity implements SensorEventListener {
                     {1, 0, 0, 1, 0, 0},
                     {0, 1, 0, 0, 1, 0},
                     {0, 0, 1, 0, 0, 1},
-                    {0, 0, 0, 1, 0, 0},
-                    {0, 0, 0, 0, 1, 0},
-                    {0, 0, 0, 0, 0, 1}
+                    {1, 0, 0, 0, 0, 0},
+                    {0, 1, 0, 0, 0, 0},
+                    {0, 0, 1, 0, 0, 0}
             };
             kalman.setTransition_matrix(new Matrix(tr));
             kalman.setError_cov_post(kalman.getError_cov_post().identity());
@@ -212,7 +212,7 @@ public class KalmanActivity extends Activity implements SensorEventListener {
             state = kalman.Predict();
             state_corrected = kalman.Correct(measurement);
 
-            Log.e("COUNT!!!!", " " + counter + "STAMP " + timestamp);
+//            Log.e("COUNT!!!!", " " + counter + "STAMP " + timestamp);
             // 积分的部分 NS2S
             if (timestamp != 0) {
                 dT = (event.timestamp - timestamp) * NS2S;  //////////////////////////////
@@ -281,14 +281,20 @@ public class KalmanActivity extends Activity implements SensorEventListener {
                     TextViewFX.setText("------Filtered Data------\nLoc X: " + Floc[0] + "\nY: " + Floc[1] + "\nZ: " + Floc[2]);
                     dT2 = 0;
 
-                    Log.v("TTEXT", "WHAT");
-                    TextViewKS.setText("WHAT");
+//                    Log.v("TTEXT", "WHAT");
+                    TextViewKS.setText("------Kalman Data------\n"
+                            +"aX\t" + state_corrected.get(0, 0) + "\n"
+                            +"aY\t"+ state_corrected.get(1, 0) + "\n"
+                            +"aZ\t"+ state_corrected.get(2, 0) + "\n"
+                            +"vX\t"+ state_corrected.get(3, 0) + "\n"
+                            +"vY\t"+ state_corrected.get(4, 0) + "\n"
+                            +"vZ\t"+ state_corrected.get(5, 0) + "\n");
 
                 } else if (counter >= 2) {
                     counter = 0;
                 } else {
                     counter++;
-                    Log.e("COUNT000",""+counter);
+//                    Log.e("COUNT000",""+counter);
                 }
             }
             timestamp = event.timestamp;
